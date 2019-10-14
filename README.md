@@ -7,7 +7,7 @@ To run this program, you need the following:
 Once everything is installed, you can go to the folder where 
 the file is present in shell like this:  
 
-`cd open_sf_foodtrucks`  
+`cd open-sf-foodtrucks`  
 Next load all dependencies and virtualenv by doing the following:  
 
 `source run.sh`  
