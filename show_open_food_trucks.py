@@ -50,7 +50,7 @@ class JsonResponse:
             print(e)
             sys.exit(1)
 
-class AllFoodTrucks:
+class FoodTrucksCollection:
     """ Array object with FoodTruck elements"""
     def __init__(self, json_data):
         """ Returns array of FoodTruck objects using json response """
@@ -70,59 +70,55 @@ class AllFoodTrucks:
                 open_foodtrucks.append(food_truck)
         return open_foodtrucks
 
+class UserSession:
+    """ """
+    def __init__(self, open_foodtrucks, num_outputs):
+        self.open_foodtrucks = open_foodtrucks
+        self.num_outputs = num_outputs
 
-def get_input():
-    """ Asks for input from user and returns appropriate response """
-    while True:
-        user_response = input(
-            "Please enter n for the remaining list of food trucks or q to exit: "
-        )
-        if user_response == "n":
-            return "next"
-        elif user_response == "q":
-            print("Goodbye!")
-            break
-        else:
-            print("Incorrect response. Please try again.")
-
-def print_output(sliced_filtered_data):
-    """ Sorts the Foodtruck objects provided by name and prints out the 
-    respective name and location of Foodtruck. """
-
-    ordered_open_food_trucks = sorted(
-        sliced_filtered_data, key=lambda food_truck: food_truck.name
-    )
-    num_results = len(ordered_open_food_trucks)
-    print(f"\nShowing {num_results} results...")
-    print("Name, Location")
-    for food_truck in ordered_open_food_trucks:
-        print(f"{food_truck.name}, {food_truck.address}")
-
-def process_output(open_foodtrucks, num_outputs):
-    """ Based on user's input, calls print_output with  
-    filtered_data sliced on specific num_outputs."""
-    if not open_foodtrucks:
-        print("No food trucks found open.")
-
-    while  open_foodtrucks:
-        if len(open_foodtrucks) >= num_outputs:
-            print_output(open_foodtrucks[:num_outputs])
-            user_input = get_input()
+    def get_input(self):
+        """ Asks for input from user and returns appropriate response """
+        while True:
+            user_response = input(
+                "Please enter n for the remaining list of food trucks or q to exit: "
+            )
+            if user_response == "n":
+                return "next"
+            elif user_response == "q":
+                print("Goodbye!")
+                break
+            else:
+                print("Incorrect response. Please try again.")
+    
+    def process_output(self):
+        """ Based on user's input, calls print_output with  
+        filtered_data sliced on specific num_outputs."""
+        if not self.open_foodtrucks:
+            print("No food trucks found open.")
+         
+        while self.open_foodtrucks:
+            print(f"\nShowing {self.num_outputs} results...")
+            print("Name, Location")
+            sliced_open_foodtrucks = self.open_foodtrucks[:self.num_outputs]
+            sorted_foodtrucks = sorted(sliced_open_foodtrucks, key=lambda food_truck: food_truck.name)
+            print(f"\nShowing results...")
+            print("Name, Location")
+            for food_truck in sorted_foodtrucks:
+                print(f"{food_truck.name}, {food_truck.address}")
+            user_input = self.get_input()
             if user_input == "next":
-                open_foodtrucks = open_foodtrucks[num_outputs:]
-        else:
-            print_output(open_foodtrucks)
-            open_foodtrucks = None
-            print("\n\nThat's all we have. Now go eat something tasty!")
-
+                self.open_foodtrucks = self.open_foodtrucks[self.num_outputs:]
+                continue
+            else:
+                break
 
 
 def main():
     URL = "http://data.sfgov.org/resource/bbb8-hzi6.json"
     json_response = JsonResponse(URL).get_data()
-    all_foodtrucks = AllFoodTrucks(json_response)
+    all_foodtrucks = FoodTrucksCollection(json_response)
     open_foodtrucks = all_foodtrucks.open_now()
-    process_output(open_foodtrucks,10)
+    begin_session = UserSession(open_foodtrucks, 10).process_output()
 
 if __name__ == "__main__":
     main()
